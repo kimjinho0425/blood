@@ -1,8 +1,10 @@
 import matplotlib.pyplot as plt
 import os
 
+# ✅ 나눔고딕 자동 설치 (Streamlit Cloud에서도 동작)
 if not os.path.exists("/usr/share/fonts/truetype/nanum/NanumGothic.ttf"):
     os.system("apt-get install -y fonts-nanum")
+
 plt.rc("font", family="NanumGothic")
 plt.rcParams["axes.unicode_minus"] = False
 
@@ -162,4 +164,5 @@ st.caption(
     "ΔP_base=200Pa, r(동맥경화)=0.7mm로 현실적 범위로 조정되었습니다. "
     "정상 대비 약 5배 압력 상승으로, 생리적으로 타당한 수준의 차이를 시각화합니다."
 )
+
 
