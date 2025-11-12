@@ -1,20 +1,27 @@
 import matplotlib.pyplot as plt
 import os
+import matplotlib.font_manager as fm
 
 # ✅ 나눔고딕 자동 설치 (Streamlit Cloud에서도 동작)
 if not os.path.exists("/usr/share/fonts/truetype/nanum/NanumGothic.ttf"):
     os.system("apt-get install -y fonts-nanum")
 
+# ✅ 폰트 캐시 갱신
+fm._rebuild()
+
+# ✅ NanumGothic으로 설정
 plt.rc("font", family="NanumGothic")
 plt.rcParams["axes.unicode_minus"] = False
 
 import streamlit as st
 import numpy as np
-import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 
+# -------------------------------
+# 페이지 설정
+# -------------------------------
 st.set_page_config(page_title="혈류 심화 시뮬레이터", layout="centered")
-st.title("혈류 심화 시뮬레이터 (Hagen–Poiseuille)")
+st.title("🩸 혈류 심화 시뮬레이터 (Hagen–Poiseuille)")
 
 # -------------------------------
 # 수식 정의
@@ -37,7 +44,7 @@ def to_mL_per_s(Q_m3_s):
 # -------------------------------
 # 파라미터 입력
 # -------------------------------
-st.sidebar.header("변수 조절")
+st.sidebar.header("⚙️ 파라미터 조절")
 r_mm = st.sidebar.slider("혈관 반지름 r (mm)", 0.2, 3.0, 1.0, 0.1)
 eta = st.sidebar.selectbox("혈액 점도 η (Pa·s)", [0.003, 0.004, 0.005], index=1)
 dP = st.sidebar.slider("압력차 ΔP (Pa)", 100, 3000, 1000)
@@ -48,7 +55,7 @@ r_m = r_mm / 1000.0
 # -------------------------------
 # ① 유량 Q 계산
 # -------------------------------
-st.subheader("유량 Q 계산")
+st.subheader("① 유량 Q 계산 (직접 대입)")
 st.latex(r"Q=\frac{\pi r^{4}\,\Delta P}{8\,\eta\,L}")
 
 Q_now_m3s = Q_from(r_m, dP, eta, L)
@@ -92,9 +99,9 @@ st.divider()
 # -------------------------------
 # ② 같은 Q 유지 시 필요한 ΔP
 # -------------------------------
-st.subheader("정상인과 같은 유량을 유지하려면 필요한 압력 ΔP (심장 부담)")
+st.subheader("② 같은 유량(Q)을 유지하려면 필요한 압력 ΔP (심장 부담)")
 
-# ✅ 현실 보정: ΔP_base 기본값 200 Pa
+# ✅ 현실적 압력 기준 (200 Pa)
 dP_base = st.slider("정상 기준 ΔP_base (Pa)", 50, 2000, 200)
 Q_target_m3s = Q_from(0.001, dP_base, 0.004, L)
 Q_target_disp = to_mL_per_s(Q_target_m3s) if unit == "mL/s" else Q_target_m3s
@@ -103,14 +110,13 @@ st.markdown(f"**기준 유량(Q_target)** = {fmt(Q_target_disp,4)} {unit_label}"
 st.latex(r"\Delta P=\frac{8\,\eta\,L\,Q}{\pi r^{4}}")
 
 # -------------------------------
-# 상태별 ΔP 계산 (정상 vs 질환 비교)
+# 상태별 ΔP 계산
 # -------------------------------
 st.markdown("**정상인과 질환자 비교: 점도(η)와 반지름(r)의 영향**")
 
-# ✅ 현실적 수치 반영
 scenarios = {
     "정상":      {"r_mm": 1.0, "eta": 0.004},
-    "동맥경화":  {"r_mm": 0.7, "eta": 0.005},  # 현실적 협착 반영
+    "동맥경화":  {"r_mm": 0.7, "eta": 0.005},
     "고지혈증":  {"r_mm": 1.0, "eta": 0.005},
     "탈수":      {"r_mm": 1.0, "eta": 0.006},
 }
@@ -124,7 +130,7 @@ for name, vals in scenarios.items():
     names.append(name)
 
 # -------------------------------
-# ✅ 그래프 (ΔP 및 ΔP/L 병기)
+# 그래프 표시
 # -------------------------------
 fig3, ax3 = plt.subplots(figsize=(7,5))
 colors = ["#2E86AB", "#F18F01", "#C73E1D", "#6C5B7B"]
@@ -152,9 +158,7 @@ if max(dPs) > 5333:
     st.warning("현재 설정은 단일 구간 압력 강하가 큰 편입니다. ΔP_base를 낮춰보세요.")
 
 st.caption(
-    "ΔP_base=200Pa, r(동맥경화)=0.7mm로 현실적 범위로 조정되었습니다. "
-    "정상 대비 약 5배 압력 상승으로, 생리적으로 타당한 수준의 차이를 시각화합니다."
+    "✅ 나눔고딕 폰트를 자동 설치하여 한글이 깨지지 않습니다.\n"
+    "ΔP_base=200Pa, r(동맥경화)=0.7mm로 현실적인 수치를 반영했습니다.\n"
+    "정상 대비 약 5배 압력 상승으로 실제 생리학적 범위 내 변화를 시각화합니다."
 )
-
-
-
