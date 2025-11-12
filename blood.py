@@ -173,7 +173,7 @@ fig3, ax3 = plt.subplots(figsize=(7,5))
 colors = ["#2E86AB", "#F18F01", "#C73E1D", "#6C5B7B"]
 bars = ax3.bar(names, dPs, color=colors)
 ax3.set_ylabel("필요한 ΔP (Pa)")
-ax3.set_title("정상 vs 질환자 비교: 점도·혈관 반지름에 따른 심장 압력 부담")
+ax3.set_title("")
 ax3.grid(True, axis="y", alpha=0.3)
 ax3.yaxis.set_major_formatter(FuncFormatter(axis_fmt0))
 
@@ -199,6 +199,7 @@ st.caption(
     "ΔP_base=200Pa, r(동맥경화)=0.7mm로 현실적인 수치를 반영했습니다.\n"
     "정상 대비 약 5배 압력 상승으로 실제 생리학적 범위 내 변화를 시각화합니다."
 )
+
 
 
 
