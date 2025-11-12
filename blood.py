@@ -1,21 +1,38 @@
-import matplotlib.pyplot as plt
 import os
+from pathlib import Path
+import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 
-# ✅ 나눔고딕 자동 설치 (없으면 시도; 실패해도 앱은 계속 동작)
-NANUM_PATH = "/usr/share/fonts/truetype/nanum/NanumGothic.ttf"
-if not os.path.exists(NANUM_PATH):
+# 후보 경로: (1) 시스템 설치 경로, (2) 리포지토리 내 fonts/ 폴더, (3) 루트
+FONT_CANDIDATES = [
+    "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",
+    str(Path(__file__).parent / "fonts" / "NanumGothic.ttf"),
+    str(Path(__file__).parent / "NanumGothic.ttf"),
+]
+
+def ensure_nanum_font() -> str | None:
+    """NanumGothic TTF 경로를 확보해 반환. 없으면 설치를 시도."""
+    for p in FONT_CANDIDATES:
+        if os.path.exists(p):
+            return p
+
+    # Streamlit Cloud에서 시스템 설치 시도(실패해도 앱은 계속 진행)
     os.system("apt-get update && apt-get install -y fonts-nanum || true")
 
-# ✅ 폰트 등록 (캐시 재생성 대신 공식 addfont 사용)
-try:
-    if os.path.exists(NANUM_PATH):
-        fm.fontManager.addfont(NANUM_PATH)
-except Exception:
+    sys_path = "/usr/share/fonts/truetype/nanum/NanumGothic.ttf"
+    return sys_path if os.path.exists(sys_path) else None
+
+font_path = ensure_nanum_font()
+
+if font_path:
+    # 폰트 파일을 직접 등록하고, 실제 폰트 '이름'을 얻어 rcParams에 반영
+    fm.fontManager.addfont(font_path)
+    font_name = fm.FontProperties(fname=font_path).get_name()  # 예: 'NanumGothic'
+    plt.rcParams["font.family"] = font_name
+else:
+    # 폰트를 못 구해도 앱이 죽지 않도록 통과 (영문만 표시될 수 있음)
     pass
 
-# ✅ NanumGothic 적용
-plt.rcParams["font.family"] = "NanumGothic"
 plt.rcParams["axes.unicode_minus"] = False
 
 import streamlit as st
@@ -167,4 +184,5 @@ st.caption(
     "ΔP_base=200Pa, r(동맥경화)=0.7mm로 현실적인 수치를 반영했습니다.\n"
     "정상 대비 약 5배 압력 상승으로 실제 생리학적 범위 내 변화를 시각화합니다."
 )
+
 
