@@ -2,15 +2,20 @@ import matplotlib.pyplot as plt
 import os
 import matplotlib.font_manager as fm
 
-# ✅ 나눔고딕 자동 설치 (Streamlit Cloud에서도 동작)
-if not os.path.exists("/usr/share/fonts/truetype/nanum/NanumGothic.ttf"):
-    os.system("apt-get install -y fonts-nanum")
+# ✅ 나눔고딕 자동 설치 (없으면 시도; 실패해도 앱은 계속 동작)
+NANUM_PATH = "/usr/share/fonts/truetype/nanum/NanumGothic.ttf"
+if not os.path.exists(NANUM_PATH):
+    os.system("apt-get update && apt-get install -y fonts-nanum || true")
 
-# ✅ 폰트 캐시 갱신
-fm._rebuild()
+# ✅ 폰트 등록 (캐시 재생성 대신 공식 addfont 사용)
+try:
+    if os.path.exists(NANUM_PATH):
+        fm.fontManager.addfont(NANUM_PATH)
+except Exception:
+    pass
 
-# ✅ NanumGothic으로 설정
-plt.rc("font", family="NanumGothic")
+# ✅ NanumGothic 적용
+plt.rcParams["font.family"] = "NanumGothic"
 plt.rcParams["axes.unicode_minus"] = False
 
 import streamlit as st
@@ -162,3 +167,4 @@ st.caption(
     "ΔP_base=200Pa, r(동맥경화)=0.7mm로 현실적인 수치를 반영했습니다.\n"
     "정상 대비 약 5배 압력 상승으로 실제 생리학적 범위 내 변화를 시각화합니다."
 )
+
