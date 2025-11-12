@@ -13,15 +13,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 
-# -------------------------------
-# 폰트 설정
-# -------------------------------
-try:
-    plt.rcParams['font.family'] = 'Malgun Gothic'
-except Exception:
-    plt.rcParams['font.family'] = 'AppleGothic'
-plt.rcParams['axes.unicode_minus'] = False
-
 st.set_page_config(page_title="혈류 심화 시뮬레이터", layout="centered")
 st.title("혈류 심화 시뮬레이터 (Hagen–Poiseuille)")
 
@@ -164,5 +155,6 @@ st.caption(
     "ΔP_base=200Pa, r(동맥경화)=0.7mm로 현실적 범위로 조정되었습니다. "
     "정상 대비 약 5배 압력 상승으로, 생리적으로 타당한 수준의 차이를 시각화합니다."
 )
+
 
 
