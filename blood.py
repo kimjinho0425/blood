@@ -1,39 +1,49 @@
+# ====== 폰트 설정 (Matplotlib 3.6+ 확실한 방법) ======
 import os
 from pathlib import Path
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 
-# 후보 경로: (1) 시스템 설치 경로, (2) 리포지토리 내 fonts/ 폴더, (3) 루트
+# 1) 리포지토리에 TTF를 두면 가장 확실함: ./fonts/NanumGothic.ttf
 FONT_CANDIDATES = [
-    "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",
-    str(Path(__file__).parent / "fonts" / "NanumGothic.ttf"),
-    str(Path(__file__).parent / "NanumGothic.ttf"),
+    "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",                    # 시스템 설치 경로
+    str(Path(__file__).parent / "fonts" / "NanumGothic.ttf"),            # 리포지토리 동봉
+    str(Path(__file__).parent / "NanumGothic.ttf"),                      # 루트에 둔 경우
 ]
 
-def ensure_nanum_font() -> str | None:
-    """NanumGothic TTF 경로를 확보해 반환. 없으면 설치를 시도."""
+def get_korean_font():
+    # (A) 먼저 후보 경로에서 찾기
     for p in FONT_CANDIDATES:
         if os.path.exists(p):
             return p
 
-    # Streamlit Cloud에서 시스템 설치 시도(실패해도 앱은 계속 진행)
+    # (B) 없으면 설치 시도: Nanum 먼저, 실패시 Noto CJK (둘 중 하나만 되어도 OK)
     os.system("apt-get update && apt-get install -y fonts-nanum || true")
+    if os.path.exists("/usr/share/fonts/truetype/nanum/NanumGothic.ttf"):
+        return "/usr/share/fonts/truetype/nanum/NanumGothic.ttf"
 
-    sys_path = "/usr/share/fonts/truetype/nanum/NanumGothic.ttf"
-    return sys_path if os.path.exists(sys_path) else None
+    os.system("apt-get install -y fonts-noto-cjk || true")
+    # Noto CJK의 대표 한글 폰트 경로(배포 이미지에 따라 다를 수 있어 패턴 탐색)
+    for root, _, files in os.walk("/usr/share/fonts"):
+        for f in files:
+            if "NotoSansCJK" in f or "NotoSans" in f:
+                return os.path.join(root, f)
+    return None
 
-font_path = ensure_nanum_font()
+_font_path = get_korean_font()
 
-if font_path:
-    # 폰트 파일을 직접 등록하고, 실제 폰트 '이름'을 얻어 rcParams에 반영
-    fm.fontManager.addfont(font_path)
-    font_name = fm.FontProperties(fname=font_path).get_name()  # 예: 'NanumGothic'
-    plt.rcParams["font.family"] = font_name
+if _font_path:
+    # 폰트 파일을 등록하고 '실제 폰트 이름'을 얻어 rcParams에 반영
+    fm.fontManager.addfont(_font_path)  # 공식 API
+    _font_name = fm.FontProperties(fname=_font_path).get_name()
+    plt.rcParams["font.family"] = [_font_name, "DejaVu Sans", "sans-serif"]
 else:
-    # 폰트를 못 구해도 앱이 죽지 않도록 통과 (영문만 표시될 수 있음)
+    # 폰트를 못 구해도 앱이 죽지 않도록 통과
+    # (이 경우 한글이 네모로 나올 수 있음)
     pass
 
 plt.rcParams["axes.unicode_minus"] = False
+# ====== 폰트 설정 끝 ======
 
 import streamlit as st
 import numpy as np
@@ -184,5 +194,6 @@ st.caption(
     "ΔP_base=200Pa, r(동맥경화)=0.7mm로 현실적인 수치를 반영했습니다.\n"
     "정상 대비 약 5배 압력 상승으로 실제 생리학적 범위 내 변화를 시각화합니다."
 )
+
 
 
