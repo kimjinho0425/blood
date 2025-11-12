@@ -58,7 +58,7 @@ from matplotlib.ticker import FuncFormatter
 # 페이지 설정
 # -------------------------------
 st.set_page_config(page_title="혈류 심화 시뮬레이터", layout="centered")
-st.title("혈류 시뮬레이터)")
+st.title("혈류 시뮬레이터")
 
 # -------------------------------
 # 수식 정의
@@ -199,6 +199,7 @@ st.caption(
     "ΔP_base=200Pa, r(동맥경화)=0.7mm로 현실적인 수치를 반영했습니다.\n"
     "정상 대비 약 5배 압력 상승으로 실제 생리학적 범위 내 변화를 시각화합니다."
 )
+
 
 
 
