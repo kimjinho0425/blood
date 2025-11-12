@@ -5,11 +5,16 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 
 # 1) 리포지토리에 TTF를 두면 가장 확실함: ./fonts/NanumGothic.ttf
+# 기존 FONT_CANDIDATES 를 아래로 교체
 FONT_CANDIDATES = [
-    "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",                    # 시스템 설치 경로
-    str(Path(__file__).parent / "fonts" / "NanumGothic.ttf"),            # 리포지토리 동봉
-    str(Path(__file__).parent / "NanumGothic.ttf"),                      # 루트에 둔 경우
+    "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",                     # 시스템 기본
+    "/usr/share/fonts/truetype/nanum/NanumGothic-Regular.ttf",             # 시스템(Regular 파일명)
+    str(Path(__file__).parent / "fonts" / "NanumGothic.ttf"),              # 리포에 NanumGothic.ttf
+    str(Path(__file__).parent / "fonts" / "NanumGothic-Regular.ttf"),      # 리포에 NanumGothic-Regular.ttf  ← 이거 추가
+    str(Path(__file__).parent / "NanumGothic.ttf"),                        # 루트
+    str(Path(__file__).parent / "NanumGothic-Regular.ttf"),                # 루트(Regular)
 ]
+
 
 def get_korean_font():
     # (A) 먼저 후보 경로에서 찾기
@@ -194,6 +199,7 @@ st.caption(
     "ΔP_base=200Pa, r(동맥경화)=0.7mm로 현실적인 수치를 반영했습니다.\n"
     "정상 대비 약 5배 압력 상승으로 실제 생리학적 범위 내 변화를 시각화합니다."
 )
+
 
 
 
